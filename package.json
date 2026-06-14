@@ -1,0 +1,14 @@
+{
+  "name": "web-access-skill",
+  "version": "2.5.3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-skill.mjs",
+    "check:deps": "node scripts/check-deps.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
+

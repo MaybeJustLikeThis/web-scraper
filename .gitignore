@@ -1,0 +1,9 @@
+.DS_Store
+*.log
+references/site-patterns/*.md
+config.env
+.claude/
+node_modules/
+.web-access/
+.tmp-web-access-state/
+*.tmp

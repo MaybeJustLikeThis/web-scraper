@@ -1,0 +1,7 @@
+interface:
+  display_name: "Web Access"
+  short_description: "Search, fetch, and automate web pages"
+  default_prompt: "Use $web-access to research a current web topic or interact with a dynamic website."
+
+policy:
+  allow_implicit_invocation: true

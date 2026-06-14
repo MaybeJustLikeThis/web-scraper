@@ -1,0 +1,18 @@
+{
+  "name": "web-access",
+  "owner": {
+    "name": "一泽 Eze"
+  },
+  "metadata": {
+    "description": "Cross-runtime web access skill for search, fetch, and CDP browser automation"
+  },
+  "plugins": [
+    {
+      "name": "web-access",
+      "description": "Search, fetch, CDP browser automation, and site experience accumulation",
+      "source": "./",
+      "category": "productivity",
+      "tags": ["web", "browser", "cdp", "automation", "search"]
+    }
+  ]
+}
