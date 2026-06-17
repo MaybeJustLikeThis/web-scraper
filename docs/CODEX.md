@@ -7,29 +7,29 @@
 项目级：
 
 ```text
-.agents/skills/web-access
+.agents/skills/web-scraper
 ```
 
-用户级位置取决于你的 Codex 环境。核心要求是：Codex 能发现包含 `SKILL.md` 的 `web-access` 目录。
+用户级位置取决于你的 Codex 环境。核心要求是：Codex 能发现包含 `SKILL.md` 的 `web-scraper` 目录。
 
 ## 使用
 
 普通联网：
 
 ```text
-Use $web-access to verify the latest official release notes and summarize the breaking changes.
+Use $web-scraper to verify the latest official release notes and summarize the breaking changes.
 ```
 
 动态页面：
 
 ```text
-Use $web-access to inspect this page in my browser and extract the loaded media URLs.
+Use $web-scraper to inspect this page in my browser and extract the loaded media URLs.
 ```
 
 本地浏览器历史：
 
 ```text
-Use $web-access to find the dashboard I opened yesterday whose title contains billing.
+Use $web-scraper to find the dashboard I opened yesterday whose title contains billing.
 ```
 
 ## Codex 路径约定
@@ -37,7 +37,7 @@ Use $web-access to find the dashboard I opened yesterday whose title contains bi
 如果 skill 安装在项目内，通常是：
 
 ```text
-.agents/skills/web-access
+.agents/skills/web-scraper
 ```
 
 手动运行脚本时，在仓库根目录执行：
@@ -50,7 +50,7 @@ node scripts\check-deps.mjs
 也可以显式设置：
 
 ```powershell
-$env:SKILL_DIR = "D:\path\to\web-access"
+$env:SKILL_DIR = "D:\path\to\web-scraper"
 node "$env:SKILL_DIR\scripts\check-deps.mjs"
 ```
 
@@ -65,7 +65,7 @@ curl.exe
 CDP 截图路径请用可写绝对路径，例如：
 
 ```text
-C:/tmp/web-access-shot.png
+C:/tmp/web-scraper-shot.png
 ```
 
 不要照搬 POSIX 的 `/tmp/...`。

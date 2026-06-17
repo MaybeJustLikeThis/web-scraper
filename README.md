@@ -1,4 +1,4 @@
-# web-access
+# web-scraper
 
 一个同时面向 Claude Code 和 Codex 的联网与浏览器自动化 skill。
 
@@ -51,12 +51,12 @@ edge://inspect/#remote-debugging
 
 ### Codex
 
-推荐把本仓库放到 `.agents/skills/web-access`，或从本仓库复制 skill 包到 Codex skills 目录。详见 [docs/CODEX.md](docs/CODEX.md)。
+推荐把本仓库放到 `.agents/skills/web-scraper`，或从本仓库复制 skill 包到 Codex skills 目录。详见 [docs/CODEX.md](docs/CODEX.md)。
 
 ## 仓库结构
 
 ```text
-web-access/
+web-scraper/
   SKILL.md                    # agent 运行时入口，保持短而可执行
   agents/openai.yaml          # Codex/OpenAI UI 元数据
   scripts/

@@ -5,7 +5,7 @@
 方式一：克隆到 Claude Code skills 目录。
 
 ```bash
-git clone <your-repo-url> "$HOME/.claude/skills/web-access"
+git clone <your-repo-url> "$HOME/.claude/skills/web-scraper"
 ```
 
 方式二：作为 Claude Code plugin 使用。
@@ -24,13 +24,13 @@ git clone <your-repo-url> "$HOME/.claude/skills/web-access"
 在 Claude Code 中直接请求：
 
 ```text
-Use $web-access to research the current official docs for Playwright screenshots.
+Use $web-scraper to research the current official docs for Playwright screenshots.
 ```
 
 需要浏览器自动化时：
 
 ```text
-Use $web-access to inspect this logged-in page and extract the visible table data.
+Use $web-scraper to inspect this logged-in page and extract the visible table data.
 ```
 
 ## 路径说明

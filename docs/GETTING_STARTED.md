@@ -4,7 +4,7 @@
 
 ## 1. 先理解两种模式
 
-web-access 有两种工作方式：
+web-scraper 有两种工作方式：
 
 | 模式 | 什么时候用 | 是否需要浏览器配置 |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ node scripts/validate-skill.mjs
 看到下面输出就表示包结构和脚本语法没问题：
 
 ```text
-web-access skill validation passed
+web-scraper skill validation passed
 ```
 
 ## 3. 第一次使用 CDP
@@ -78,19 +78,19 @@ node scripts/check-deps.mjs --browser edge
 普通联网：
 
 ```text
-Use $web-access to find the latest official docs for this API and summarize the supported options.
+Use $web-scraper to find the latest official docs for this API and summarize the supported options.
 ```
 
 动态网页：
 
 ```text
-Use $web-access to open this logged-in dashboard, inspect the table, and tell me the top 5 rows.
+Use $web-scraper to open this logged-in dashboard, inspect the table, and tell me the top 5 rows.
 ```
 
 浏览器历史：
 
 ```text
-Use $web-access to find the internal page I visited last week about deployment approvals.
+Use $web-scraper to find the internal page I visited last week about deployment approvals.
 ```
 
 ## 6. 安全提醒
