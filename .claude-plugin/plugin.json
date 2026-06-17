@@ -1,13 +1,13 @@
 {
-  "name": "web-access",
-  "description": "Cross-runtime web access skill for search, fetch, CDP browser automation, and site experience accumulation",
-  "version": "2.5.3",
+  "name": "web-scraper",
+  "description": "Cross-runtime web scraping skill: degrade from lightest to heaviest (platform CLI → curl → Jina → built-in browser → CDP → browser-use)",
+  "version": "2.6.0",
   "author": {
     "name": "一泽 Eze"
   },
-  "homepage": "https://github.com/eze-is/web-access",
-  "repository": "https://github.com/eze-is/web-access",
+  "homepage": "https://github.com/eze-is/web-scraper",
+  "repository": "https://github.com/eze-is/web-scraper",
   "license": "MIT",
-  "keywords": ["web", "browser", "cdp", "automation", "search"],
+  "keywords": ["web", "scrape", "browser", "cdp", "automation", "search"],
   "skills": ["./"]
 }

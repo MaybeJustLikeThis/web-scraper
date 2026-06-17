@@ -1,7 +1,7 @@
 interface:
-  display_name: "Web Access"
-  short_description: "Search, fetch, and automate web pages"
-  default_prompt: "Use $web-access to research a current web topic or interact with a dynamic website."
+  display_name: "Web Scraper"
+  short_description: "Scrape, fetch, and automate web pages"
+  default_prompt: "Use $web-scraper to scrape a URL or interact with a dynamic website."
 
 policy:
   allow_implicit_invocation: true
