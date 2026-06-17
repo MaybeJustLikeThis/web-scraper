@@ -1,12 +1,12 @@
 # web-scraper
 
-一个同时面向 Claude Code 和 Codex 的联网与浏览器自动化 skill。
+一个同时面向 Claude Code 和 Codex 的**降级链抓取 skill**：给定 URL，从最轻到最重依次尝试——平台专用 CLI → `curl` → Jina → 内置浏览器 → CDP 登录态 → browser-use，拿到实质内容就停。
 
 它做三件事：
 
-- 为普通联网任务选择轻量路径：搜索、读取 URL、`curl`、Jina。
-- 需要登录态、动态页面或网页交互时，升级到本地浏览器 CDP 模式。
-- 把配置、token、站点经验和校验流程整理清楚，避免新手卡在环境变量和平台差异里。
+- **预判 + 降级链**：按 URL 特征路由到专用 CLI（yt-dlp/gh/twitter/xhs/rdt），否则逐层升级 curl → Jina → 内置浏览器 → CDP → browser-use。
+- **登录态/动态页**：需要登录态、反爬或重度动态渲染时，用 CDP 接管日常浏览器（带书签/历史）。
+- **可移植**：CC plugin + Codex `.agents/skills` 双运行时打包，`npm run deploy` 一键同步部署。
 
 ## 适合谁
 
