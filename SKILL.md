@@ -1,143 +1,134 @@
 ---
-name: web-access
-description: Use when a task needs current web information, web search, fetching a URL, browser automation, logged-in pages, dynamic pages, local browser history/bookmarks, or extracting data/media from websites.
+name: web-scraper
+description: "Use when 抓取/爬取/采集/扒内容/提取网页正文，或 fetch/scrape/crawl 一个 URL——包括静态页、SPA 动态页、需登录态或需浏览器自动化的站点。"
 ---
 
-# Web Access
+# Web Scraper — 自动降级抓取
 
-Use this skill to choose the lightest reliable web access path, then escalate only when the target requires more capability.
+给定一个 URL，按 **预判 → 降级链 → 后处理** 三段执行。每层拿到实质内容就停，否则升级到下一层。
 
-## Resolve The Skill Directory
+---
 
-Examples use `$SKILL_DIR` as the directory that contains this `SKILL.md`.
+## 阶段一：预判（零成本 URL 路由）
 
-- In Codex repo skills, this is often `.agents/skills/web-access`.
-- In Claude Code, `${CLAUDE_SKILL_DIR}` may already point here.
-- If no runtime variable exists, set `$SKILL_DIR` explicitly to the absolute path before running scripts.
+检查 URL 域名关键词，命中即走专用路径，跳过通用降级链：
 
-Do not assume `CLAUDE_SKILL_DIR`, `~/.claude`, `/tmp`, `pkill`, `WebSearch`, or `WebFetch` exist in every runtime.
+| URL 包含 | 直接执行 |
+|----------|----------|
+| `youtube.com` / `youtu.be` | `yt-dlp --write-auto-sub --sub-lang zh,en --skip-download "URL"` |
+| `bilibili.com` | `yt-dlp --write-auto-sub --sub-lang zh --skip-download "URL"` |
+| `github.com` | `gh repo view OWNER/REPO` 或 `gh search code "关键词"` |
+| `twitter.com` / `x.com` | `twitter read "URL"`（需 cookie） |
+| `reddit.com` | `rdt read "URL"` |
+| `xiaohongshu.com` / `xhslink.com` | `xhs read "URL"`（需 cookie） |
+| `juejin.cn` / `zhihu.com` / `medium.com` / `jianshu.com` | SPA，跳过第 1-2 层，直接进第 3 层 |
 
-Load `references/runtime-adapters.md` when the runtime's web tools, shell syntax, or skill directory conventions are unclear.
+未命中 → 进入阶段二。
 
-## Choose The Access Path
+---
 
-Start by defining the success criterion: what information, action, file, media, or page state would make the task done?
+## 阶段二：降级链（逐层升级，拿到就停）
 
-Use the first path that can meet that criterion:
+每层执行后判断返回**是否有实质内容**（正文/数据/讨论）。有则停；无（空页/403/登录墙/报错）则下一层。
 
-| Need | Preferred path |
-| --- | --- |
-| Discover public sources or current facts | Runtime web search tool |
-| Read a known public URL | Runtime page fetch/open tool, `curl`, or Jina for article-like pages |
-| Inspect raw HTML, metadata, JSON-LD, or API payloads | `curl` or a small parser |
-| Use logged-in state, interact with UI, handle dynamic rendering, or inspect user-opened/internal pages | CDP browser mode |
-| Find a page the user previously visited or bookmarked | `scripts/find-url.mjs` |
+### 第 1 层：curl（零成本）
 
-Plain search and public page reading must not be blocked on CDP setup. Run CDP checks only when browser state, dynamic rendering, or page interaction is needed.
+```bash
+curl -sL -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" "URL"
+```
 
-Prefer primary sources for factual verification. Search engines and aggregators locate sources; they do not prove facts by themselves.
+从 HTML 提取正文，去 `<script>`/`<style>`/导航/广告。有内容则停。
 
-## Safety Gates
+### 第 2 层：Jina Reader（干净 Markdown，省 token）
 
-Before using the user's logged-in browser, state the risk and ask for explicit confirmation when the task touches:
+```bash
+curl -sL "https://r.jina.ai/URL"
+```
 
-- accounts, private/internal systems, or non-public data
-- posting, uploading, deleting, purchasing, submitting forms, or changing settings
-- high-risk platforms with strict automation detection
+有内容则停。
 
-Never automate passwords, 2FA prompts, payments, irreversible submissions, or permission grants unless the user explicitly performs the sensitive step themselves and asks you to continue afterward.
+### 第 3 层：内置浏览器工具（JS 渲染，零配置）
 
-Use user-created tabs only when asked. Otherwise create your own background tab and close only tabs you created.
+- **Claude Code**：Playwright MCP — `browser_navigate` 打开 URL → `browser_evaluate` 执行
+  `document.querySelector('article')?.innerText || document.querySelector('main')?.innerText || document.body.innerText.substring(0, 15000)` → `browser_close`
+- **Codex**：运行时内置 web 工具
 
-## CDP Browser Mode
+专治 SPA（掘金/知乎/Medium 等）。有内容则停。
 
-Run the dependency check from the actual skill directory:
+### 第 4 层：CDP 模式（带登录态/书签/历史）
+
+接管你日常用的 Chrome/Edge 的登录态。前置检查（`$SKILL_DIR` 是本 skill 目录）：
 
 ```bash
 node "$SKILL_DIR/scripts/check-deps.mjs"
 ```
 
-PowerShell example:
+- `exit 0` → 用 CDP API 提取（见 `references/cdp-api.md`）
+- `exit 2` → 选浏览器，写 `config.env` 后重试
+- `exit 1` → 按脚本提示开启浏览器远程调试（`chrome://inspect/#remote-debugging`）
 
-```powershell
-$env:SKILL_DIR = "D:\path\to\web-access"
-node "$env:SKILL_DIR\scripts\check-deps.mjs"
+这层解决需登录、反爬、重度动态渲染的页面。**安全门**：操作登录态/私有系统/提交表单前先征得用户确认。有内容则停。
+
+### 第 5 层：browser-use（AI 驱动兜底）
+
+需要点击/填表/滚动/复杂交互时用：
+
+```
+1. browser-use open "URL"
+2. browser-use state
+3. browser-use get text
+4. 无内容则 browser-use scroll down → 再次 get text
+5. browser-use close
 ```
 
-Process results:
+详见 `references/browser-use.md`。所有层失败 → 阶段三失败输出。
 
-- `exit 0`: continue with CDP API calls.
-- `exit 2`: ask which detected browser should be the default, then write `WEB_ACCESS_BROWSER=chrome` or `WEB_ACCESS_BROWSER=edge` to the state directory `config.env`, or rerun once with `--browser chrome|edge`.
-- `exit 1`: follow the script's printed remediation. If the browser must be opened or remote debugging enabled, ask the user unless the runtime already has approval to open the browser.
-
-If switching browsers, stop the existing proxy in a platform-appropriate way before rerunning:
-
-```powershell
-Get-CimInstance Win32_Process |
-  Where-Object { $_.CommandLine -like "*cdp-proxy.mjs*" } |
-  ForEach-Object { Stop-Process -Id $_.ProcessId }
-```
-
-```bash
-pkill -f cdp-proxy.mjs
-```
-
-Load `references/cdp-api.md` when making CDP API calls, debugging proxy errors, or writing JavaScript extraction snippets.
-
-CDP API calls require the local `X-Web-Access-Token` header. `scripts/check-deps.mjs` handles this automatically; manual `curl` calls should follow `references/cdp-api.md`.
-
-## Browser Interaction Principles
-
-- Inspect page structure before acting. Use DOM text, links, buttons, forms, and loaded resources as evidence.
-- Treat every result as a signal against the success criterion. If retries do not improve the result, change approach.
-- Preserve complete URLs generated by site interactions, including query parameters and fragments.
-- Use DOM extraction for text and media URLs before resorting to screenshots.
-- Scroll before extracting lazily loaded media.
-- Close only tabs created by the agent.
-
-## Local Browser Resources
-
-When the user refers to a page they visited, a bookmark, or an internal system that public search cannot locate, search browser history/bookmarks:
-
-```bash
-node "$SKILL_DIR/scripts/find-url.mjs" keyword terms --only bookmarks|history --browser chrome|edge --limit 20 --since 7d --sort recent
-```
-
-Load `references/cdp-api.md` only if the discovered URL then requires browser rendering or logged-in state.
-
-## Site Patterns
-
-Site-specific experience can live in `references/site-patterns/{domain}.md`, but treat it as advisory and date-sensitive.
-
-Only write new site patterns when:
-
-- the behavior was verified during the task
-- the note helps future tasks avoid a real failure or repeated discovery
-- the skill directory is user-writable, or the user approved writing there
-
-Use this format:
-
-```markdown
 ---
-domain: example.com
-aliases: [Example]
-updated: 2026-06-14
----
-## Platform Facts
-Verified architecture, login, loading, or anti-automation behavior.
 
-## Working Patterns
-Verified URL patterns, interaction strategy, selectors, or extraction method.
+## 阶段三：后处理
 
-## Known Traps
-What failed, why it failed, and when observed.
+### 成功
+
+格式化输出：
+
 ```
+✅ 抓取成功（方法：第X层 - 工具名）
+🔗 来源：URL
+---
+（整理后的正文：保留段落/标题/列表/代码块，图片转 [图片](URL)，去噪；超 8000 字截断并提示）
+---
+```
+
+输出后问用户：1.保存到文件（`D:/Mycase/scrape-output/域名-时间戳.md`）/ 2.存知识库 / 3.都要 / 4.看看就行。
+
+### 失败
+
+```
+❌ 抓取失败：URL
+已尝试：（实际尝试过的层）
+最后失败原因：（具体错误）
+建议：需登录？提供 cookie？换代理？
+```
+
+---
+
+## 批量抓取
+
+| 数量 | 策略 |
+|------|------|
+| 1-10 个 URL | 逐个执行上面的流程 |
+| 10-100 个 | 子 Agent 并行，每个处理一批 |
+| 100+ 个 | 写 Scrapling Spider 脚本，见 `references/scrapling.md` |
+
+---
 
 ## References
 
-| File | Load when |
-| --- | --- |
-| `references/cdp-api.md` | Using CDP endpoints, screenshots, JavaScript extraction, or proxy troubleshooting |
-| `references/migration-2.5.3.md` | Updating old `/new?url=` or `/navigate?...&url=` calls to POST-body calls |
-| `references/runtime-adapters.md` | Runtime-specific web tools, shell syntax, state directory, or token handling |
-| `references/site-patterns/{domain}.md` | A target domain has a matching verified site pattern |
+| 文件 | 何时读 |
+|------|--------|
+| `references/cdp-api.md` | 用第 4 层 CDP、写 JS 提取、排错 proxy |
+| `references/runtime-adapters.md` | CC/Codex 运行时差异、shell 语法、`$SKILL_DIR` 解析 |
+| `references/agent-reach.md` | 预判层平台 CLI（yt-dlp/gh/twitter/xhs/rdt）速查 |
+| `references/scrapling.md` | Scrapling 结构化提取 + 反爬 |
+| `references/browser-use.md` | 第 5 层 browser-use 命令速查 |
+| `references/migration-2.5.3.md` | 旧 CDP URL query API 迁移 |
