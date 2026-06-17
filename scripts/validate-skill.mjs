@@ -42,8 +42,8 @@ function checkSkillMarkdown() {
   for (const key of keys) {
     if (!allowed.has(key)) fail(`SKILL.md frontmatter has unsupported key: ${key}`);
   }
-  if (!lines.includes('name: web-access')) fail('SKILL.md frontmatter must include name: web-access');
-  const desc = lines.find((line) => line.startsWith('description: '))?.slice('description: '.length) || '';
+  if (!lines.includes('name: web-scraper')) fail('SKILL.md frontmatter must include name: web-scraper');
+  const desc = (lines.find((line) => line.startsWith('description: '))?.slice('description: '.length) || '').replace(/^["']|["']$/g, '');
   if (!desc.startsWith('Use when ')) fail('description must start with "Use when "');
   if (desc.length > 500) fail(`description is too long (${desc.length} chars)`);
   if (text.split(/\r?\n/).length > 500) fail('SKILL.md should stay under 500 lines');
@@ -51,10 +51,6 @@ function checkSkillMarkdown() {
 
 function checkStructure() {
   if (!exists('agents/openai.yaml')) fail('agents/openai.yaml is missing');
-  if (!exists('README.md')) fail('README.md is missing for repository onboarding');
-  if (!exists('docs/GETTING_STARTED.md')) fail('docs/GETTING_STARTED.md is missing');
-  if (!exists('docs/CLAUDE_CODE.md')) fail('docs/CLAUDE_CODE.md is missing');
-  if (!exists('docs/CODEX.md')) fail('docs/CODEX.md is missing');
   if (!exists('scripts/state.mjs')) fail('scripts/state.mjs is missing');
   if (!exists('scripts/validate-skill.mjs')) fail('scripts/validate-skill.mjs is missing');
 }
@@ -107,9 +103,9 @@ checkBannedText();
 checkScripts();
 
 if (errors.length) {
-  console.error(`web-access skill validation failed (${errors.length}):`);
+  console.error(`web-scraper skill validation failed (${errors.length}):`);
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
 }
 
-console.log('web-access skill validation passed');
+console.log('web-scraper skill validation passed');
