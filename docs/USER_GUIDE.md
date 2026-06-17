@@ -21,7 +21,7 @@
 ### 方式一：Claude Code 全局（所有项目可用）
 
 ```bash
-git clone https://github.com/MaybeJustLikeThis/web-scraper.git ~/.claude/skills/web-scraper
+git clone https://github.com/MaybeJustLikeThis/web-scraper.git $HOME/.claude/skills/web-scraper
 ```
 
 Windows（非 git bash）：
@@ -47,7 +47,7 @@ git clone https://github.com/MaybeJustLikeThis/web-scraper.git .agents/skills/we
 ### 验证安装
 
 ```bash
-cd ~/.claude/skills/web-scraper   # 或对应安装路径
+cd $HOME/.claude/skills/web-scraper   # 或对应安装路径
 node scripts/validate-skill.mjs
 ```
 
@@ -130,7 +130,7 @@ CDP 只监听 `127.0.0.1`，所有 API 需本地 token（脚本自动处理）�
 ## 给维护者
 
 - 源仓库：`github.com/MaybeJustLikeThis/web-scraper`
-- 改完 skill 同步部署：`npm run deploy`（复制到 `~/.claude/skills/web-scraper` + `../.agents/skills/web-scraper`，自动排除 `.git`）
+- 改完 skill 同步部署：`npm run deploy`（复制到 `$HOME/.claude/skills/web-scraper` + `../.agents/skills/web-scraper`，自动排除 `.git`）
 - 校验包：`npm run validate`
 - state 目录（token、`config.env`）用 `web-access` 命名空间，跨平台位置见 `docs/GETTING_STARTED.md`
 - 详细参考：`references/`（cdp-api、runtime-adapters、agent-reach、scrapling、browser-use）
