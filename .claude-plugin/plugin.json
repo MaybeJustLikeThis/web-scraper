@@ -5,8 +5,8 @@
   "author": {
     "name": "一泽 Eze"
   },
-  "homepage": "https://github.com/eze-is/web-scraper",
-  "repository": "https://github.com/eze-is/web-scraper",
+  "homepage": "https://github.com/MaybeJustLikeThis/web-scraper",
+  "repository": "https://github.com/MaybeJustLikeThis/web-scraper",
   "license": "MIT",
   "keywords": ["web", "scrape", "browser", "cdp", "automation", "search"],
   "skills": ["./"]
